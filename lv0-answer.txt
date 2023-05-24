@@ -1,0 +1,12 @@
+1.分析Tokenizer::tokenize函数的功用，即是把程序输入的input转化并使用deque在保存。进而发现程序在输入后将输入储存在std::string line中，并调用的Tokenizer类的构造函数，而构造函数传入参数的类型为const std::string&。所以此处应与构造函数的参数类型保持一致，使用const std::string&。
+使用std::string来获取输入也是可以的，但是const std::string&是一个只读的引用变量，所以可以起到节约内存的作用，安全性也比std::string要更好
+
+2.程序使用智能指针std::unique_ptr<Token>首先省去了在new指针之后delete的代码，排除了程序员因为忘记delete而导致内存泄漏的风险
+
+3.tokens是一个deque容器，里面存储了由Tokenizer::tokenize(const std::string& input)和Tokenizer::tokenize()生成的有顺序的TokenPtr指针，而Token作为基类派生出了针对不同类型子字符串的多个派生类。在执行Tokenizer::tokenize()时，程序会调用Tokenizer::nextToken函数，而后者会进行异常处理以及子字符串的生成，子字符串在生成之后所对应的指针也会变成派生类类型的指针，如此再通过重载<<运算符以及toString函数，也就可以cout，便获得了所要的*Token的输出
+
+4.程序主要会对两种词法分析时遇到的错误进行异常抛出：
+(1)针对#后的非法参数有的异常抛出
+(2)针对双引号“是否不合格式的异常抛出
+
+5.比较deque和vector的区别，二者的区别主要在于deque比vector访问头部元素的速度快非常多，使用deque可以为之后添加的访问头部的操作节省很多的时间
