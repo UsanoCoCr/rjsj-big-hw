@@ -89,4 +89,13 @@ public:
     std::string toString() const override;
     BuiltinFuncType* func;
 };
+
+class LambdaValue : public Value{
+    std::vector<std::string> params;
+    std::vector<std::shared_ptr<Value>> body;
+public:
+    std::string toString() const override;
+    LambdaValue(std::vector<std::string> input_params, std::vector<std::shared_ptr<Value>> input_body);
+    LambdaValue();
+};
 #endif

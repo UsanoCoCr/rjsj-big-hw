@@ -20,6 +20,9 @@ void add_builtins(){
     total_env["even?"] = std::make_shared<BuiltinProcValue>(&isEven);
     total_env["odd?"] = std::make_shared<BuiltinProcValue>(&isOdd);
     total_env["zero?"] = std::make_shared<BuiltinProcValue>(&isZero);
+    total_env["length"] = std::make_shared<BuiltinProcValue>(&length);
+    total_env["car"] = std::make_shared<BuiltinProcValue>(&car);
+    total_env["cdr"] = std::make_shared<BuiltinProcValue>(&cdr);
 }
 
 ValuePtr add(const std::vector<ValuePtr>& params){
@@ -173,4 +176,35 @@ ValuePtr isZero(const std::vector<ValuePtr>& params){
         result = true;
     }
     return std::make_shared<BooleanValue>(result);
+}
+ValuePtr length(const std::vector<ValuePtr>& params){
+    if(params.size() != 1){
+        throw LispError("length function only takes one parameter.");
+    }
+    if (!params[0]->isList()) {
+        throw LispError("Cannot calculate a non-list value.");
+    }
+    auto flag = dynamic_cast<PairValue&>(*params[0]);
+    int result = flag.toVector().size();
+    return std::make_shared<NumericValue>(result);
+}
+ValuePtr car(const std::vector<ValuePtr>& params){
+    if(params.size() != 1){
+        throw LispError("car function only takes one parameter.");
+    }
+    if (!params[0]->isList()) {
+        throw LispError("Cannot calculate a non-list value.");
+    }
+    auto flag = dynamic_cast<PairValue&>(*params[0]);
+    return flag.carValue();
+}
+ValuePtr cdr(const std::vector<ValuePtr>& params){
+    if(params.size() != 1){
+        throw LispError("cdr function only takes one parameter.");
+    }
+    if (!params[0]->isList()) {
+        throw LispError("Cannot calculate a non-list value.");
+    }
+    auto flag = dynamic_cast<PairValue&>(*params[0]);
+    return flag.cdrValue();
 }

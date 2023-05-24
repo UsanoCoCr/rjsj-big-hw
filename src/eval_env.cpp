@@ -21,15 +21,20 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
         throw LispError("Evaluating nil is prohibited.");
     } 
     else if (expr->isList()){
-        /* PairValue* expr_ptr = dynamic_cast<PairValue*>(expr);
+        std::vector<ValuePtr> v = dynamic_cast<PairValue&>(*expr).toVector();
+        PairValue* expr_ptr = dynamic_cast<PairValue*>(expr.get());
         if(auto name = expr_ptr->carValue()->asSymbol()){
             if(special_forms.find(*name) != special_forms.end()){
-                return special_forms.at(*name)(expr_ptr->cdrValue(), *this);
+                return special_forms.at(*name)(expr_ptr->cdrValue()->toVector(), *this);
             }
-        } */
-        
-        std::vector<ValuePtr> v = dynamic_cast<PairValue&>(*expr).toVector();
-        if(v[0]->asSymbol() == "define"s){
+            else{
+                ValuePtr proc = this->eval(v[0]);
+                std::vector<ValuePtr> args = this->evalList(dynamic_cast<PairValue&>(*expr).cdrValue());
+                return this->apply(proc, args);
+            }
+        } 
+
+        /* if(v[0]->asSymbol() == "define"s){
             if(auto name = v[1]->asSymbol()){
                 env[*name] = eval(v[2]);
                 return std::make_shared<NilValue>();    
@@ -37,12 +42,12 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
             else{
                 throw LispError("Invalid identifier");
             }
-        }
+        } 
         else{
             ValuePtr proc = this->eval(v[0]);
             std::vector<ValuePtr> args = this->evalList(dynamic_cast<PairValue&>(*expr).cdrValue());
             return this->apply(proc, args);
-        }
+        }*/
     }
     else if (expr->isSymbol()){
         if(auto name = expr->asSymbol()){

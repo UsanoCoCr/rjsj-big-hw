@@ -147,6 +147,15 @@ std::string BuiltinProcValue::toString() const{
     return "#<procedure>";
 }
 
+std::string LambdaValue::toString() const{
+    return "#<procedure>";
+}
+LambdaValue::LambdaValue(std::vector<std::string> input_params, std::vector<ValuePtr> input_body):
+    params{input_params}, body{input_body}{}
+LambdaValue::LambdaValue(): params{}, body{}{}
+    
+
+
 /* int main() {
     //v=(a.(b.(c.d)))
     ValuePtr v=std::make_shared<PairValue>(

@@ -25,5 +25,8 @@ ValuePtr greater(const std::vector<ValuePtr>& params);
 ValuePtr isEven(const std::vector<ValuePtr>& params);
 ValuePtr isOdd(const std::vector<ValuePtr>& params);
 ValuePtr isZero(const std::vector<ValuePtr>& params); 
+ValuePtr length(const std::vector<ValuePtr>& params);
+ValuePtr car(const std::vector<ValuePtr>& params);
+ValuePtr cdr(const std::vector<ValuePtr>& params);
 
 # endif
