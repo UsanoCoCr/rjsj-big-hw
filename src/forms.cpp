@@ -72,12 +72,12 @@ ValuePtr andForm(const std::vector<ValuePtr>& params, EvalEnv& Env){
     }
     else{
         for(int i = 0; i < params.size(); i++){
-            if(strcmp(Env.eval(params[0])->toString().c_str(), "#f") == 0){
+            if(strcmp(Env.eval(params[i])->toString().c_str(), "#f") == 0){
                 return std::make_shared<BooleanValue>(false);
             }
             Env.eval(params[i]);
         }
-        return std::make_shared<NilValue>();
+        return Env.eval(params[params.size() - 1]);
     }
 }
 ValuePtr orForm(const std::vector<ValuePtr>& params, EvalEnv& Env){
