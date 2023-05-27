@@ -70,6 +70,11 @@ ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {
     if (typeid(*proc) == typeid(BuiltinProcValue)) {
         return dynamic_cast<BuiltinProcValue&>(*proc).func(args);
     } 
+    /* if (typeid(*proc) == typeid(LambdaValue)) {
+        auto lambda = dynamic_cast<LambdaValue&>(*proc);
+        std::shared_ptr<EvalEnv> child = this->createChild(lambda.params, args);
+        return lambda.apply(dynamic_cast<LambdaValue&>(*proc).body);
+    } */
     else{
         throw LispError("Unimplemented");
     }
@@ -87,7 +92,7 @@ ValuePtr EvalEnv::lookupBinding(std::string name) {
     }
 }
 
-void EvalEnv::defineBinding(std::vector<std::string> names, std::vector<ValuePtr> values) {
+void EvalEnv::defineBinding(std::vector<std::string>& names, std::vector<ValuePtr>& values) {
     if (names.size() != values.size()) {
         throw LispError("Wrong number of arguments");
     }
@@ -100,4 +105,17 @@ std::shared_ptr<EvalEnv> EvalEnv::createGlobal() {
     std::shared_ptr<EvalEnv> global(new EvalEnv());
     global->parent = nullptr;
     return global;
+}
+
+std::shared_ptr<EvalEnv> EvalEnv::createChild(const std::vector<std::string>& params, 
+                                        const std::vector<ValuePtr>& args){
+    std::shared_ptr<EvalEnv> child=EvalEnv::createGlobal();
+    child->parent = this->shared_from_this();
+    if(params.size() != args.size()){
+        throw LispError("Wrong number of arguments");
+    }
+    for(int i=0; i<params.size(); i++){
+        child->env[params[i]] = args[i];
+    }
+    return child;                        
 }

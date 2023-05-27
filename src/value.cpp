@@ -5,6 +5,8 @@
 #include "./value.h"
 #include "./error.h"
 #include "./eval_env.h"
+#include "./builtins.h"
+#include "./forms.h"
 
 using ValuePtr = std::shared_ptr<Value>;
 
@@ -162,6 +164,20 @@ LambdaValue::LambdaValue(std::vector<std::string> input_params, std::vector<std:
 bool LambdaValue::isLambda(){
     return true;
 }
+/* ValuePtr LambdaValue::apply(const std::vector<ValuePtr>& args){
+    if(args.size()!=params.size()){
+        throw LispError("Wrong number of arguments");
+    }
+    for(int i=0; i<body.size(); i++){
+        body[i]=current_env->lookupBinding(body[i]->asSymbol().value());
+    }
+    for(int i=0; i<args.size(); i++){
+        current_env->defineBinding(params[i], args[i]);
+    }
+    ValuePtr result;
+    
+    return result;
+} */
     
 
 
