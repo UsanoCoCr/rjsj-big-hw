@@ -1,0 +1,7 @@
+# ninja log v5
+11	1760	7068919741232055	CMakeFiles/mini_lisp.dir/src/token.cpp.obj	b06c67f5603df55b
+8	1768	7068919741301630	CMakeFiles/mini_lisp.dir/src/value.cpp.obj	6ccedf50730d5020
+6	1781	7068919741431884	CMakeFiles/mini_lisp.dir/src/tokenizer.cpp.obj	2e11eb3a61a0093d
+9	1821	7068919741818547	CMakeFiles/mini_lisp.dir/src/parser.cpp.obj	294067be9fd995ac
+2	875	7068926450748306	CMakeFiles/mini_lisp.dir/src/eval_env.cpp.obj	1fbd97a957f58bfa
+4	2120	7068926463180933	CMakeFiles/mini_lisp.dir/src/main.cpp.obj	2efbdb632c81b1b0

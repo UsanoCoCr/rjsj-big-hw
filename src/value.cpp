@@ -4,6 +4,7 @@
 #include <iomanip>
 #include "./value.h"
 #include "./error.h"
+#include "./eval_env.h"
 
 using ValuePtr = std::shared_ptr<Value>;
 
@@ -23,6 +24,9 @@ bool Value::isSymbol(){
     return false;
 }
 bool Value::isNumber(){
+    return false;
+}
+bool Value::isLambda(){
     return false;
 }
 double Value::asNumber() const{
@@ -150,9 +154,14 @@ std::string BuiltinProcValue::toString() const{
 std::string LambdaValue::toString() const{
     return "#<procedure>";
 }
-LambdaValue::LambdaValue(std::vector<std::string> input_params, std::vector<ValuePtr> input_body):
-    params{input_params}, body{input_body}{}
-LambdaValue::LambdaValue(): params{}, body{}{}
+LambdaValue::LambdaValue(std::vector<std::string> input_params, std::vector<std::shared_ptr<Value>> input_body,
+                         std::shared_ptr<EvalEnv> input_env) 
+                            : params(std::move(input_params)), 
+                            body(std::move(input_body)), 
+                            current_env(std::move(input_env)) {}
+bool LambdaValue::isLambda(){
+    return true;
+}
     
 
 

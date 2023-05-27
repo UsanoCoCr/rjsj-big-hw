@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+class EvalEnv;
+
 class Value{
 public:
     virtual std::string toString() const = 0;
@@ -16,6 +18,7 @@ public:
     virtual bool isNumber();
     virtual bool isList();
     virtual bool isSymbol();
+    virtual bool isLambda();
     virtual std::optional<std::string> asSymbol() const;
     virtual double asNumber() const;
     virtual std::vector<std::shared_ptr<Value>> toVector() const;
@@ -95,7 +98,9 @@ class LambdaValue : public Value{
     std::vector<std::shared_ptr<Value>> body;
 public:
     std::string toString() const override;
-    LambdaValue(std::vector<std::string> input_params, std::vector<std::shared_ptr<Value>> input_body);
-    LambdaValue();
+    LambdaValue(std::vector<std::string> input_params, std::vector<std::shared_ptr<Value>> input_body,
+                std::shared_ptr<EvalEnv> input_env);
+    bool isLambda() override;  
+    std::shared_ptr<EvalEnv> current_env;
 };
 #endif

@@ -11,8 +11,6 @@
 
 using namespace std::literals;
 
-std::unordered_map<std::string, ValuePtr> EvalEnv::env;
-
 ValuePtr EvalEnv::eval(ValuePtr expr) {
     if (expr->isSelfEvaluating()) {
         return expr;
@@ -33,27 +31,15 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
                 return this->apply(proc, args);
             }
         } 
-
-        /* if(v[0]->asSymbol() == "define"s){
-            if(auto name = v[1]->asSymbol()){
-                env[*name] = eval(v[2]);
-                return std::make_shared<NilValue>();    
-            }
-            else{
-                throw LispError("Invalid identifier");
-            }
-        } 
-        else{
-            ValuePtr proc = this->eval(v[0]);
-            std::vector<ValuePtr> args = this->evalList(dynamic_cast<PairValue&>(*expr).cdrValue());
-            return this->apply(proc, args);
-        }*/
     }
     else if (expr->isSymbol()){
         if(auto name = expr->asSymbol()){
             if(env.find(*name) != env.end()){
                 return env[*name];
             }
+            else if(parent != nullptr){
+                return parent->lookupBinding(*name);
+            } 
             else{
                 throw LispError("Variable " + *name + " not defined.");
             }
@@ -65,6 +51,7 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
 }
 
 EvalEnv::EvalEnv() {
+    parent = nullptr;
     add_builtins();
     for (auto& [name, proc] : total_env) {
         env[name] = proc;
@@ -82,7 +69,35 @@ std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
 ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {
     if (typeid(*proc) == typeid(BuiltinProcValue)) {
         return dynamic_cast<BuiltinProcValue&>(*proc).func(args);
-    } else {
+    } 
+    else{
         throw LispError("Unimplemented");
     }
+}
+
+ValuePtr EvalEnv::lookupBinding(std::string name) {
+    if (env.find(name) != env.end()) {
+        return env[name];
+    } 
+    else if (parent != nullptr) {
+        return parent->lookupBinding(name);
+    } 
+    else {
+        throw LispError("Unbound variable: " + name);
+    }
+}
+
+void EvalEnv::defineBinding(std::vector<std::string> names, std::vector<ValuePtr> values) {
+    if (names.size() != values.size()) {
+        throw LispError("Wrong number of arguments");
+    }
+    for (int i = 0; i < names.size(); i++) {
+        env[names[i]] = values[i];
+    }
+}
+
+std::shared_ptr<EvalEnv> EvalEnv::createGlobal() {
+    std::shared_ptr<EvalEnv> global(new EvalEnv());
+    global->parent = nullptr;
+    return global;
 }

@@ -10,19 +10,20 @@
 using ValuePtr = std::shared_ptr<Value>;
 
 struct TestCtx {
-    EvalEnv env;
+    std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
     std::string eval(std::string input) {
         auto tokens = Tokenizer::tokenize(input);
         Parser parser(std::move(tokens));
         auto value = parser.parse();
-        auto result = env.eval(std::move(value));
+        auto result = env->eval(std::move(value));
         return result->toString();
     }
 };
 
 int main() {
-
-    /* while (true) {
+    
+    std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
+    while (true) {
         try {
             std::cout << ">>> " ;
             std::string line;
@@ -34,16 +35,16 @@ int main() {
             Parser parser(std::move(tokens));
             auto value = parser.parse();
             //std::cout << value->toString() << std::endl;
-            EvalEnv env;
-            auto result = env.eval(std::move(value));
+            
+            auto result = env->eval(std::move(value));
             std::cout << result->toString() << std::endl;
-            for (auto& token : tokens) {
+            /* for (auto& token : tokens) {
                 std::cout << *token << std::endl;
-            }  
+            }   */
         } catch (std::runtime_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
-    }   */
+    }   
 
     /* ValuePtr a = std::make_shared<NumericValue>(42);
     ValuePtr b = std::make_shared<BooleanValue>(false);
@@ -65,5 +66,5 @@ int main() {
               << f->toString() << std::endl;
     */        
 
-    RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4, Lv5, Lv5Extra);
+    //RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4, Lv5, Lv5Extra);
 }

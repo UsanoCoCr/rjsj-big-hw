@@ -38,7 +38,7 @@ ValuePtr defineForm(const std::vector<ValuePtr>& args, EvalEnv& Env){
                 }
             }
             std::vector<ValuePtr> body = dynamic_cast<PairValue&>(*args[1]).toVector();
-            Env.env[*name] = std::make_shared<LambdaValue>(params, body);
+            Env.env[*name] = std::make_shared<LambdaValue>(params, body, Env.createGlobal());
             return std::make_shared<NilValue>();
         }
         else{
@@ -94,7 +94,22 @@ ValuePtr orForm(const std::vector<ValuePtr>& params, EvalEnv& Env){
     }
 }
 ValuePtr lambdaForm(const std::vector<ValuePtr>& params, EvalEnv& Env){
-
-    LambdaValue* lambda = new LambdaValue();
-    return std::make_shared<LambdaValue>(*lambda);
+    if(params.size() != 2){
+        throw LispError("Wrong number of arguments");
+    }
+    if(params[0]->isList() == false || params[1]->isList() == false){
+        throw LispError("Unimplemented");
+    }
+    std::vector<std::string> param{};
+    std::vector<ValuePtr> temp = dynamic_cast<PairValue&>(*params[0]).toVector();
+    for(int i = 0; i < temp.size(); i++){
+        if(auto name = temp[i]->asSymbol()){
+            param.push_back(*name);
+        }
+        else{
+            throw LispError("Unimplemented");
+        }
+    }
+    std::vector<ValuePtr> body = dynamic_cast<PairValue&>(*params[1]).toVector();
+    return std::make_shared<LambdaValue>(param, body, Env.shared_from_this());
 }
