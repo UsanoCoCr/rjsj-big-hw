@@ -1,3 +1,3 @@
-C:/Users/forev/Desktop/study/1-2/SDP/mini_lisp (1)/cmake-build-debug/CMakeFiles/mini_lisp.dir
-C:/Users/forev/Desktop/study/1-2/SDP/mini_lisp (1)/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/forev/Desktop/study/1-2/SDP/mini_lisp (1)/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/forev/Desktop/mini_lisp (1)/cmake-build-debug/CMakeFiles/mini_lisp.dir
+C:/Users/forev/Desktop/mini_lisp (1)/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/forev/Desktop/mini_lisp (1)/cmake-build-debug/CMakeFiles/rebuild_cache.dir

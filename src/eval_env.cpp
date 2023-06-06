@@ -66,15 +66,15 @@ std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
     return result;
 }
 
-ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {
+ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {//proc是函数名，args是参数列表
     if (typeid(*proc) == typeid(BuiltinProcValue)) {
         return dynamic_cast<BuiltinProcValue&>(*proc).func(args);
     } 
-    /* if (typeid(*proc) == typeid(LambdaValue)) {
+    else if (typeid(*proc) == typeid(LambdaValue)) {//对于lambda来说，proc是参数列表，args是函数体
         auto lambda = dynamic_cast<LambdaValue&>(*proc);
         std::shared_ptr<EvalEnv> child = this->createChild(lambda.params, args);
-        return lambda.apply(dynamic_cast<LambdaValue&>(*proc).body);
-    } */
+        return lambda.apply(args);
+    } 
     else{
         throw LispError("Unimplemented");
     }
@@ -92,7 +92,7 @@ ValuePtr EvalEnv::lookupBinding(std::string name) {
     }
 }
 
-void EvalEnv::defineBinding(std::vector<std::string>& names, std::vector<ValuePtr>& values) {
+void EvalEnv::defineBinding(const std::vector<std::string>& names, const std::vector<ValuePtr>& values) {
     if (names.size() != values.size()) {
         throw LispError("Wrong number of arguments");
     }

@@ -38,7 +38,18 @@ ValuePtr defineForm(const std::vector<ValuePtr>& args, EvalEnv& Env){
                 }
             }
             std::vector<ValuePtr> body = dynamic_cast<PairValue&>(*args[1]).toVector();
-            Env.env[*name] = std::make_shared<LambdaValue>(params, body, Env.createGlobal());
+            for(int i=2;i<args.size();i++){
+                //插入提示符
+                //body.push_back(std::make_shared<SymbolValue>(";"));
+                std::vector<ValuePtr> temp = dynamic_cast<PairValue&>(*args[i]).toVector();
+                body.insert(body.end(), temp.begin(), temp.end());
+            }
+            std::vector<ValuePtr> start{};
+            for(int i=0;i<params.size();i++){
+                start.push_back(std::make_shared<NilValue>());
+            }
+            Env.env[*name] = std::make_shared<LambdaValue>(
+                params, body, Env.createChild(params, start));
             return std::make_shared<NilValue>();
         }
         else{

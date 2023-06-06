@@ -37,6 +37,30 @@ double Value::asNumber() const{
 std::vector<ValuePtr> Value::toVector() const{
     throw LispError("Not a list or a nil value");
 }
+ValuePtr Value::fromVector(std::vector<ValuePtr> v){
+    if(v.size()==0){
+        return std::make_shared<NilValue>();
+    }
+    //;是两个列表之间的分隔符
+    ValuePtr result = std::make_shared<NilValue>();
+    /*for(int i=0; i<v.size(); i++){
+        if(v[i]->asSymbol() == ";"){
+            std::vector<ValuePtr> temp_car,temp_cdr;
+            for(int j=0; j<i; j++){
+                temp_car.push_back(v[j]);
+            }
+            for(int j=i+1; j<v.size(); j++){
+                temp_cdr.push_back(v[j]);
+            }
+            result = std::make_shared<PairValue>(Value::fromVector(temp_car), Value::fromVector(temp_cdr));
+            return result;
+        }
+    }*/
+    for(auto it=v.rbegin(); it!=v.rend(); ++it){
+        result=std::make_shared<PairValue>(*it, result);
+    }
+    return result;
+}
 
 BooleanValue::BooleanValue(bool v) : value{v} {}
 std::string BooleanValue::toString() const{
@@ -164,23 +188,16 @@ LambdaValue::LambdaValue(std::vector<std::string> input_params, std::vector<std:
 bool LambdaValue::isLambda(){
     return true;
 }
-/* ValuePtr LambdaValue::apply(const std::vector<ValuePtr>& args){
+ValuePtr LambdaValue::apply(const std::vector<ValuePtr>& args){//这一步相当于是调用的时候把实参贴上去
     if(args.size()!=params.size()){
-        throw LispError("Wrong number of arguments");
+        throw LispError("LambdaValue::apply : Wrong number of arguments");
     }
-    for(int i=0; i<body.size(); i++){
-        body[i]=current_env->lookupBinding(body[i]->asSymbol().value());
-    }
-    for(int i=0; i<args.size(); i++){
-        current_env->defineBinding(params[i], args[i]);
-    }
-    ValuePtr result;
-    
+    current_env->defineBinding(params,args);
+    //把vector args转成pairValue
+    ValuePtr PairArgs=PairValue::fromVector(body);
+    ValuePtr result=current_env->eval(PairArgs);
     return result;
-} */
-    
-
-
+}  
 /* int main() {
     //v=(a.(b.(c.d)))
     ValuePtr v=std::make_shared<PairValue>(

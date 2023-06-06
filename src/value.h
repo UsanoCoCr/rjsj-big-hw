@@ -22,6 +22,7 @@ public:
     virtual std::optional<std::string> asSymbol() const;
     virtual double asNumber() const;
     virtual std::vector<std::shared_ptr<Value>> toVector() const;
+    static std::shared_ptr<Value> fromVector(std::vector<std::shared_ptr<Value>> v);
 };
 
 class BooleanValue : public Value{
@@ -96,13 +97,14 @@ public:
 class LambdaValue : public Value{
     
 public:
-    std::vector<std::string> params;
-    std::vector<std::shared_ptr<Value>> body;
+    std::vector<std::string> params;//参数列表
+    std::vector<std::shared_ptr<Value>> body;//函数体
     std::string toString() const override;
     LambdaValue(std::vector<std::string> input_params, std::vector<std::shared_ptr<Value>> input_body,
                 std::shared_ptr<EvalEnv> input_env);
     bool isLambda() override;  
     std::shared_ptr<EvalEnv> current_env;
-    //std::shared_ptr<Value> apply(const std::vector<std::shared_ptr<Value>>& args);
+    std::shared_ptr<Value> apply(const std::vector<std::shared_ptr<Value>>& args);
+    
 };
 #endif
