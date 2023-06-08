@@ -43,7 +43,7 @@ ValuePtr Value::fromVector(std::vector<ValuePtr> v){
     }
     //;是两个列表之间的分隔符
     ValuePtr result = std::make_shared<NilValue>();
-    for(int i=0; i<v.size(); i++){
+    for(int i=v.size()-1; i>=0; i--){
         if(v[i]->asSymbol() == ";"){
             std::vector<ValuePtr> temp_car,temp_cdr;
             for(int j=0; j<i; j++){
@@ -61,6 +61,16 @@ ValuePtr Value::fromVector(std::vector<ValuePtr> v){
     }
     return result;
 }
+/*ValuePtr Value::fromVector(std::vector<ValuePtr> v){
+    if(v.size()==0){
+        return std::make_shared<NilValue>();
+    }
+    ValuePtr result = std::make_shared<NilValue>();
+    for(auto it=v.rbegin(); it!=v.rend(); ++it){
+        result=std::make_shared<PairValue>(*it, result);
+    }
+    return result;
+}*/
 
 BooleanValue::BooleanValue(bool v) : value{v} {}
 std::string BooleanValue::toString() const{

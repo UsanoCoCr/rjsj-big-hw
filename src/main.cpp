@@ -22,7 +22,7 @@ struct TestCtx {
 
 int main() {
     
-    /* std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
+    /*std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
     while (true) {
         try {
             std::cout << ">>> " ;
@@ -38,13 +38,13 @@ int main() {
             
             auto result = env->eval(std::move(value));
             std::cout << result->toString() << std::endl;
-             for (auto& token : tokens) {
+             *//*for (auto& token : tokens) {
                 std::cout << *token << std::endl;
-            }   
+            }   *//*
         } catch (std::runtime_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
-    }  */  
+    }*/
 
     /* ValuePtr a = std::make_shared<NumericValue>(42);
     ValuePtr b = std::make_shared<BooleanValue>(false);

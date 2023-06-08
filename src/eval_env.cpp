@@ -25,19 +25,15 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
             if(special_forms.find(*name) != special_forms.end()){
                 return special_forms.at(*name)(expr_ptr->cdrValue()->toVector(), *this);
             }
-            else{
+            /*else{
                 ValuePtr proc = this->eval(v[0]);
                 std::vector<ValuePtr> args = this->evalList(dynamic_cast<PairValue&>(*expr).cdrValue());
                 return this->apply(proc, args);
-            }
-        } 
-        if(expr_ptr->carValue()->isList() == true){
-            this->eval(expr_ptr->carValue());
+            }*/
         }
-        if(expr_ptr->cdrValue()->isList() == true){
-            this->eval(expr_ptr->cdrValue());
-        }
-        return std::make_shared<NilValue>();
+        ValuePtr proc = this->eval(expr_ptr->carValue());
+        std::vector<ValuePtr> args = this->evalList(dynamic_cast<PairValue&>(*expr).cdrValue());
+        return this->apply(proc, args);
     }
     else if (expr->isSymbol()){
         if(auto name = expr->asSymbol()){
@@ -69,7 +65,7 @@ std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
     std::vector<ValuePtr> result;
     std::ranges::transform(expr->toVector(),
                            std::back_inserter(result),
-                           [this](ValuePtr v) { return this->eval(v); });
+                           [this](ValuePtr v) { return (v->isSymbol() && total_env.find(v->toString())!=total_env.end()) ? v : this->eval(v); });
     return result;
 }
 
@@ -79,11 +75,15 @@ ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {//proc是函
     } 
     else if (typeid(*proc) == typeid(LambdaValue)) {//对于lambda来说，proc是参数列表，args是函数体
         auto lambda = dynamic_cast<LambdaValue&>(*proc);
-        std::shared_ptr<EvalEnv> child = this->createChild(lambda.params, args);
+        //std::shared_ptr<EvalEnv> child = this->createChild(lambda.params, args);
         return lambda.apply(args);
-    } 
+    }
+    else if (typeid(*proc) == typeid(NilValue)) {
+        ValuePtr body = Value::fromVector(args);
+        return this->eval(body);
+    }
     else{
-        throw LispError("Unimplemented");
+        throw LispError("EvalEnv::apply(): Unimplemented");
     }
 }
 
