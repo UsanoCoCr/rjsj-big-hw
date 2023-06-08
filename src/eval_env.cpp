@@ -31,6 +31,13 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
                 return this->apply(proc, args);
             }
         } 
+        if(expr_ptr->carValue()->isList() == true){
+            this->eval(expr_ptr->carValue());
+        }
+        if(expr_ptr->cdrValue()->isList() == true){
+            this->eval(expr_ptr->cdrValue());
+        }
+        return std::make_shared<NilValue>();
     }
     else if (expr->isSymbol()){
         if(auto name = expr->asSymbol()){

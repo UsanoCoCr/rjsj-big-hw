@@ -40,7 +40,7 @@ ValuePtr defineForm(const std::vector<ValuePtr>& args, EvalEnv& Env){
             std::vector<ValuePtr> body = dynamic_cast<PairValue&>(*args[1]).toVector();
             for(int i=2;i<args.size();i++){
                 //插入提示符
-                //body.push_back(std::make_shared<SymbolValue>(";"));
+                body.push_back(std::make_shared<SymbolValue>(";"));
                 std::vector<ValuePtr> temp = dynamic_cast<PairValue&>(*args[i]).toVector();
                 body.insert(body.end(), temp.begin(), temp.end());
             }

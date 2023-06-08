@@ -43,7 +43,7 @@ ValuePtr Value::fromVector(std::vector<ValuePtr> v){
     }
     //;是两个列表之间的分隔符
     ValuePtr result = std::make_shared<NilValue>();
-    /*for(int i=0; i<v.size(); i++){
+    for(int i=0; i<v.size(); i++){
         if(v[i]->asSymbol() == ";"){
             std::vector<ValuePtr> temp_car,temp_cdr;
             for(int j=0; j<i; j++){
@@ -55,7 +55,7 @@ ValuePtr Value::fromVector(std::vector<ValuePtr> v){
             result = std::make_shared<PairValue>(Value::fromVector(temp_car), Value::fromVector(temp_cdr));
             return result;
         }
-    }*/
+    }
     for(auto it=v.rbegin(); it!=v.rend(); ++it){
         result=std::make_shared<PairValue>(*it, result);
     }
