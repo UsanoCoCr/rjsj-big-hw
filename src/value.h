@@ -16,6 +16,8 @@ public:
     virtual bool isNil();
     virtual bool isSelfEvaluating();
     virtual bool isNumber();
+    virtual bool isBoolean();
+    virtual bool isString();
     virtual bool isList();
     virtual bool isSymbol();
     virtual bool isLambda();
@@ -32,6 +34,7 @@ public:
     BooleanValue(bool v);
     std::string toString() const override;
     bool isSelfEvaluating() override;
+    bool isBoolean() override;
 };
 
 class NumericValue : public Value{
@@ -52,6 +55,7 @@ public:
     StringValue(const std::string &v);
     std::string toString() const override;
     bool isSelfEvaluating() override;
+    bool isString() override;
 };
 
 class NilValue : public Value{
@@ -85,7 +89,7 @@ public:
     std::shared_ptr<Value> carValue() const;
 };
 
-using BuiltinFuncType = std::shared_ptr<Value>(const std::vector<std::shared_ptr<Value>>&);
+using BuiltinFuncType = std::shared_ptr<Value>(const std::vector<std::shared_ptr<Value>>&, const EvalEnv&);
 
 class BuiltinProcValue : public Value{
 public:

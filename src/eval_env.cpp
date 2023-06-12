@@ -71,7 +71,7 @@ std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
 
 ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {//proc是函数名，args是参数列表
     if (typeid(*proc) == typeid(BuiltinProcValue)) {
-        return dynamic_cast<BuiltinProcValue&>(*proc).func(args);
+        return dynamic_cast<BuiltinProcValue&>(*proc).func(args, *this);
     } 
     else if (typeid(*proc) == typeid(LambdaValue)) {//对于lambda来说，proc是参数列表，args是函数体
         auto lambda = dynamic_cast<LambdaValue&>(*proc);

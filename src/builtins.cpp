@@ -25,7 +25,7 @@ void add_builtins(){
     total_env["cdr"] = std::make_shared<BuiltinProcValue>(&cdr);
 }
 
-ValuePtr add(const std::vector<ValuePtr>& params){
+ValuePtr add(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     double result = 0.000000;
     for (const auto& i : params) {
         if (!i->isNumber()) {
@@ -36,13 +36,13 @@ ValuePtr add(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<NumericValue>(result);
 }
-ValuePtr print(const std::vector<ValuePtr>& params){
+ValuePtr print(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     for (const auto& i : params) {
         std::cout << i->toString() << std::endl;
     }
     return std::make_shared<NilValue>();
 }
-ValuePtr sub(const std::vector<ValuePtr>& params){
+ValuePtr sub(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     double result = 0.000000;
     result += 2*dynamic_cast<NumericValue&>(*params[0]).asNumber();
     for (const auto& i : params) {
@@ -54,7 +54,7 @@ ValuePtr sub(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<NumericValue>(result);
 }
-ValuePtr mul(const std::vector<ValuePtr>& params){
+ValuePtr mul(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     double result = 1.000000;
     for (const auto& i : params) {
         if (!i->isNumber()) {
@@ -65,7 +65,7 @@ ValuePtr mul(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<NumericValue>(result);
 }
-ValuePtr divi(const std::vector<ValuePtr>& params){
+ValuePtr divi(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     double result = 1.000000;
     if(dynamic_cast<NumericValue&>(*params[0]).asNumber() == 0){
         result = 0;
@@ -82,7 +82,7 @@ ValuePtr divi(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<NumericValue>(result);
 }
-ValuePtr abss(const std::vector<ValuePtr>& params){
+ValuePtr abss(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     if(params.size() != 1){
         throw LispError("abs function only takes one parameter.");
     }
@@ -96,7 +96,7 @@ ValuePtr abss(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<NumericValue>(result);
 }
-ValuePtr equal(const std::vector<ValuePtr>& params){
+ValuePtr equal(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     bool result = true;
     for (const auto& i : params) {
         if (!i->isNumber()) {
@@ -109,7 +109,7 @@ ValuePtr equal(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<BooleanValue>(result);
 }
-ValuePtr less(const std::vector<ValuePtr>& params){
+ValuePtr less(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     bool result = true;
     for(int i = 0; i < params.size() - 1; i++){
         if (!params[i]->isNumber()) {
@@ -122,7 +122,7 @@ ValuePtr less(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<BooleanValue>(result);
 }
-ValuePtr greater(const std::vector<ValuePtr>& params){
+ValuePtr greater(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     bool result = true;
     for(int i = 0; i < params.size() - 1; i++){
         if (!params[i]->isNumber()) {
@@ -135,7 +135,7 @@ ValuePtr greater(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<BooleanValue>(result);
 }
-ValuePtr isEven(const std::vector<ValuePtr>& params){
+ValuePtr isEven(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     if(params.size() != 1){
         throw LispError("isEven function only takes one parameter.");
     }
@@ -149,7 +149,7 @@ ValuePtr isEven(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<BooleanValue>(result);
 }
-ValuePtr isOdd(const std::vector<ValuePtr>& params){
+ValuePtr isOdd(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     if(params.size() != 1){
         throw LispError("isOdd function only takes one parameter.");
     }
@@ -163,7 +163,7 @@ ValuePtr isOdd(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<BooleanValue>(result);
 }
-ValuePtr isZero(const std::vector<ValuePtr>& params){
+ValuePtr isZero(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     if(params.size() != 1){
         throw LispError("isZero function only takes one parameter.");
     }
@@ -177,7 +177,7 @@ ValuePtr isZero(const std::vector<ValuePtr>& params){
     }
     return std::make_shared<BooleanValue>(result);
 }
-ValuePtr length(const std::vector<ValuePtr>& params){
+ValuePtr length(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     if(params.size() != 1){
         throw LispError("length function only takes one parameter.");
     }
@@ -188,7 +188,7 @@ ValuePtr length(const std::vector<ValuePtr>& params){
     int result = flag.toVector().size();
     return std::make_shared<NumericValue>(result);
 }
-ValuePtr car(const std::vector<ValuePtr>& params){
+ValuePtr car(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     if(params.size() != 1){
         throw LispError("car function only takes one parameter.");
     }
@@ -198,7 +198,7 @@ ValuePtr car(const std::vector<ValuePtr>& params){
     auto flag = dynamic_cast<PairValue&>(*params[0]);
     return flag.carValue();
 }
-ValuePtr cdr(const std::vector<ValuePtr>& params){
+ValuePtr cdr(const std::vector<ValuePtr>& params, const EvalEnv& Env){
     if(params.size() != 1){
         throw LispError("cdr function only takes one parameter.");
     }
@@ -207,4 +207,107 @@ ValuePtr cdr(const std::vector<ValuePtr>& params){
     }
     auto flag = dynamic_cast<PairValue&>(*params[0]);
     return flag.cdrValue();
+}
+ValuePtr isAtom(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isAtom function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isSelfEvaluating() || params[0]->isSymbol() || params[0]->isNil()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isBoolean(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isBoolean function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isBoolean()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isInteger(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isInteger function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isNumber()){
+        auto flag = dynamic_cast<NumericValue&>(*params[0]);
+        if((int)flag.asNumber() == flag.asNumber()){
+            result = true;
+        }
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isList(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isList function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isList() || params[0]->isNil()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isNumber(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isNumber function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isNumber()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isNull(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isNull function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isNil()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isPair(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isPair function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isList()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isProcedure(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isProcedure function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->toString() == "#<procedure>"){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isString(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isString function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isString()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
+}
+ValuePtr isSymbol(const std::vector<ValuePtr>& params, const EvalEnv& Env){
+    if(params.size() != 1){
+        throw LispError("isSymbol function only takes one parameter.");
+    }
+    bool result = false;
+    if(params[0]->isSymbol()){
+        result = true;
+    }
+    return std::make_shared<BooleanValue>(result);
 }

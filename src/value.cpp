@@ -25,6 +25,12 @@ std::optional<std::string> Value::asSymbol() const{
 bool Value::isSymbol(){
     return false;
 }
+bool Value::isBoolean(){
+    return false;
+}
+bool Value::isString(){
+    return false;
+}
 bool Value::isNumber(){
     return false;
 }
@@ -84,6 +90,9 @@ std::string BooleanValue::toString() const{
 bool BooleanValue::isSelfEvaluating(){
     return true;
 }
+bool BooleanValue::isBoolean(){
+    return true;
+}
 
 NumericValue::NumericValue(double v) : value{v} {}
 std::string NumericValue::toString() const{
@@ -109,6 +118,9 @@ std::string StringValue::toString() const{
     return ss.str();
 }
 bool StringValue::isSelfEvaluating(){
+    return true;
+}
+bool StringValue::isString(){
     return true;
 }
 
@@ -182,7 +194,7 @@ std::shared_ptr<Value> PairValue::carValue() const{
     return car;
 }
 
-BuiltinProcValue::BuiltinProcValue(BuiltinFuncType* f) : func{f} {}
+BuiltinProcValue::BuiltinProcValue(BuiltinFuncType* func) : func{func} {}
 std::string BuiltinProcValue::toString() const{
     return "#<procedure>";
 }
