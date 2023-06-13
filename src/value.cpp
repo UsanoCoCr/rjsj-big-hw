@@ -193,6 +193,14 @@ std::shared_ptr<Value> PairValue::cdrValue() const{
 std::shared_ptr<Value> PairValue::carValue() const{
     return car;
 }
+std::shared_ptr<Value> PairValue::setCar(std::shared_ptr<Value> input_car) {
+    car = input_car;
+    return car;
+}
+std::shared_ptr<Value> PairValue::setCdr(std::shared_ptr<Value> input_cdr) {
+    cdr = input_cdr;
+    return cdr;
+}
 
 BuiltinProcValue::BuiltinProcValue(BuiltinFuncType* func) : func{func} {}
 std::string BuiltinProcValue::toString() const{

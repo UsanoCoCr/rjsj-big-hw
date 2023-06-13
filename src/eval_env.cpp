@@ -82,6 +82,17 @@ ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {//proc是函
         ValuePtr body = Value::fromVector(args);
         return this->eval(body);
     }
+    else if (typeid(*proc) == typeid(SymbolValue)) {
+        if (env.find(proc->toString()) != env.end()) {
+            return env.at(proc->toString());
+        }
+        else if (parent != nullptr) {
+            return parent->lookupBinding(proc->toString());
+        }
+        else {
+            throw LispError("Unbound variable: " + proc->toString());
+        }
+    }
     else{
         throw LispError("EvalEnv::apply(): Unimplemented");
     }

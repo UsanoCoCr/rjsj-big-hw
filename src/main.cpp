@@ -22,7 +22,7 @@ struct TestCtx {
 
 int main() {
     
-    std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
+    /*std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
     while (true) {
         try {
             std::cout << ">>> " ;
@@ -44,7 +44,7 @@ int main() {
         } catch (std::runtime_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
-    }
+    }*/
 
     /* ValuePtr a = std::make_shared<NumericValue>(42);
     ValuePtr b = std::make_shared<BooleanValue>(false);
@@ -66,5 +66,5 @@ int main() {
               << f->toString() << std::endl;
     */        
 
-    //RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4, Lv5, Lv5Extra, Lv6);
+    RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4, Lv5, Lv5Extra, Lv6);
 }

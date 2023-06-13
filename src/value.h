@@ -87,9 +87,11 @@ public:
     std::vector<std::shared_ptr<Value>> toVector() const;
     std::shared_ptr<Value> cdrValue() const;
     std::shared_ptr<Value> carValue() const;
+    std::shared_ptr<Value> setCar(std::shared_ptr<Value> input_car);
+    std::shared_ptr<Value> setCdr(std::shared_ptr<Value> input_cdr);
 };
 
-using BuiltinFuncType = std::shared_ptr<Value>(const std::vector<std::shared_ptr<Value>>&, const EvalEnv&);
+using BuiltinFuncType = std::shared_ptr<Value>(const std::vector<std::shared_ptr<Value>>&, EvalEnv&);
 
 class BuiltinProcValue : public Value{
 public:
