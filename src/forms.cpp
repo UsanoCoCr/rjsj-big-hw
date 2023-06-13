@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <unordered_set>
 
 const std::unordered_map<std::string, SpecialFormType*> special_forms = {
     {"define", defineForm},
@@ -14,7 +15,7 @@ const std::unordered_map<std::string, SpecialFormType*> special_forms = {
     {"or", orForm},
     {"lambda", lambdaForm}
 };
-
+ValuePtr lambdaForm(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr defineForm(const std::vector<ValuePtr>& args, EvalEnv& Env){
     if(args[0]->isSymbol() == true){
         if(auto name = args[0]->asSymbol()){
@@ -37,19 +38,19 @@ ValuePtr defineForm(const std::vector<ValuePtr>& args, EvalEnv& Env){
                     throw LispError("Unimplemented");
                 }
             }
-            std::vector<ValuePtr> body = dynamic_cast<PairValue&>(*args[1]).toVector();
+            std::vector<ValuePtr> body;
+            body.push_back(args[1]);
             for(int i=2;i<args.size();i++){
+                body.push_back(args[i]);
+            }
+            /*for(int i=2;i<args.size();i++){
                 //插入提示符
                 body.push_back(std::make_shared<SymbolValue>(";"));
                 std::vector<ValuePtr> temp = dynamic_cast<PairValue&>(*args[i]).toVector();
                 body.insert(body.end(), temp.begin(), temp.end());
-            }
-            std::vector<ValuePtr> start{};
-            for(int i=0;i<params.size();i++){
-                start.push_back(std::make_shared<NilValue>());
-            }
+            }*/
             Env.env[*name] = std::make_shared<LambdaValue>(
-                params, body, Env.createChild(params, start));
+                params, body, Env.shared_from_this());
             return std::make_shared<NilValue>();
         }
         else{
@@ -112,15 +113,26 @@ ValuePtr lambdaForm(const std::vector<ValuePtr>& params, EvalEnv& Env){
         throw LispError("Unimplemented");
     }
     std::vector<std::string> param{};
-    std::vector<ValuePtr> temp = dynamic_cast<PairValue&>(*params[0]).toVector();
-    for(int i = 0; i < temp.size(); i++){
-        if(auto name = temp[i]->asSymbol()){
+    std::unordered_set<std::string> param_set{};
+    ValuePtr temp = params[0];
+    std::vector<ValuePtr> body;
+    for(auto i : params){
+        if(i != params[0]){
+            body.push_back(i);
+        }
+    }
+    while(temp->isList() == true){
+        if(auto name = dynamic_cast<PairValue&>(*temp).carValue()->asSymbol()){
+            if(param_set.find(*name) != param_set.end()){
+                throw LispError("Duplicate parameter");
+            }
+            param_set.insert(*name);
             param.push_back(*name);
         }
         else{
-            throw LispError("Unimplemented");
+            throw LispError("LambdaForm::Unimplemented");
         }
+        temp = dynamic_cast<PairValue&>(*temp).cdrValue();
     }
-    std::vector<ValuePtr> body = dynamic_cast<PairValue&>(*params[1]).toVector();
     return std::make_shared<LambdaValue>(param, body, Env.shared_from_this());
 }

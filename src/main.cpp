@@ -1,10 +1,10 @@
 #include <iostream>
 #include <string>
 
+#include "./eval_env.h"
+#include "./parser.h"
 #include "./tokenizer.h"
 #include "./value.h"
-#include "./parser.h"
-#include "./eval_env.h"
 #include "rjsj_test.hpp"
 
 using ValuePtr = std::shared_ptr<Value>;
@@ -21,11 +21,11 @@ struct TestCtx {
 };
 
 int main() {
-    
-    /*std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
+    RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4, Lv5, Lv5Extra, Lv6, Lv7, Lv7Lib);
+    std::shared_ptr<EvalEnv> env = EvalEnv::createGlobal();
     while (true) {
         try {
-            std::cout << ">>> " ;
+            std::cout << ">>> ";
             std::string line;
             std::getline(std::cin, line);
             if (std::cin.eof()) {
@@ -34,17 +34,17 @@ int main() {
             auto tokens = Tokenizer::tokenize(line);
             Parser parser(std::move(tokens));
             auto value = parser.parse();
-            //std::cout << value->toString() << std::endl;
-            
+            // std::cout << value->toString() << std::endl;
+
             auto result = env->eval(std::move(value));
             std::cout << result->toString() << std::endl;
-             for (auto& token : tokens) {
+            for (auto& token : tokens) {
                 std::cout << *token << std::endl;
             }
         } catch (std::runtime_error& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
-    }*/
+    }
 
     /* ValuePtr a = std::make_shared<NumericValue>(42);
     ValuePtr b = std::make_shared<BooleanValue>(false);
@@ -64,7 +64,5 @@ int main() {
               << d->toString() << '\n'
               << e->toString() << '\n'
               << f->toString() << std::endl;
-    */        
-
-    RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4, Lv5, Lv5Extra, Lv6);
+    */
 }
