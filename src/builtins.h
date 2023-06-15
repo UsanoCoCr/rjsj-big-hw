@@ -1,11 +1,12 @@
-# ifndef BUILTINS_H
-# define BUILTINS_H
+#ifndef BUILTINS_H
+#define BUILTINS_H
 
-# include "./value.h"
-# include "./error.h"
-# include <iostream>
-#include <vector>
+#include <iostream>
 #include <unordered_map>
+#include <vector>
+
+#include "./error.h"
+#include "./value.h"
 
 using ValuePtr = std::shared_ptr<Value>;
 
@@ -42,9 +43,9 @@ ValuePtr append(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr cons(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr listLength(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr list(const std::vector<ValuePtr>& params, EvalEnv& Env);
-ValuePtr map(const std::vector<ValuePtr>& params, EvalEnv& Env);//error
-ValuePtr filter(const std::vector<ValuePtr>& params, EvalEnv& Env);//error
-ValuePtr reduce(const std::vector<ValuePtr>& params, EvalEnv& Env);//error
+ValuePtr map(const std::vector<ValuePtr>& params, EvalEnv& Env);     // error
+ValuePtr filter(const std::vector<ValuePtr>& params, EvalEnv& Env);  // error
+ValuePtr reduce(const std::vector<ValuePtr>& params, EvalEnv& Env);  // error
 ValuePtr expt(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr quotient(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr modulo(const std::vector<ValuePtr>& params, EvalEnv& Env);
@@ -54,6 +55,12 @@ ValuePtr eqNum(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr nnot(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr greatereq(const std::vector<ValuePtr>& params, EvalEnv& Env);
 ValuePtr lesseq(const std::vector<ValuePtr>& params, EvalEnv& Env);
+ValuePtr apply(const std::vector<ValuePtr>& params, EvalEnv& Env);
+ValuePtr display(const std::vector<ValuePtr>& params, EvalEnv& Env);
+ValuePtr displayln(const std::vector<ValuePtr>& params, EvalEnv& Env);
+ValuePtr error(const std::vector<ValuePtr>& params, EvalEnv& Env);
+ValuePtr eeval(const std::vector<ValuePtr>& params, EvalEnv& Env);
+ValuePtr eexit(const std::vector<ValuePtr>& params, EvalEnv& Env);
+ValuePtr newline(const std::vector<ValuePtr>& params, EvalEnv& Env);
 
-
-# endif
+#endif

@@ -42,8 +42,8 @@ void add_builtins() {
     total_env["length"] = std::make_shared<BuiltinProcValue>(&listLength);
     total_env["list"] = std::make_shared<BuiltinProcValue>(&list);
     total_env["map"] = std::make_shared<BuiltinProcValue>(&map);
-    total_env["filter"] = std::make_shared<BuiltinProcValue>(&filter);
-    // total_env["reduce"] = std::make_shared<BuiltinProcValue>(&reduce);
+    // total_env["filter"] = std::make_shared<BuiltinProcValue>(&filter);
+    //  total_env["reduce"] = std::make_shared<BuiltinProcValue>(&reduce);
     total_env["expt"] = std::make_shared<BuiltinProcValue>(&expt);
     total_env["quotient"] = std::make_shared<BuiltinProcValue>(&quotient);
     total_env["modulo"] = std::make_shared<BuiltinProcValue>(&modulo);
@@ -52,7 +52,14 @@ void add_builtins() {
     total_env["equal?"] = std::make_shared<BuiltinProcValue>(&equalNum);
     total_env[">="] = std::make_shared<BuiltinProcValue>(&greatereq);
     total_env["<="] = std::make_shared<BuiltinProcValue>(&lesseq);
-    // total_env["not"] = std::make_shared<BuiltinProcValue>(&nnot);
+    total_env["not"] = std::make_shared<BuiltinProcValue>(&nnot);
+    total_env["apply"] = std::make_shared<BuiltinProcValue>(&apply);
+    total_env["display"] = std::make_shared<BuiltinProcValue>(&display);
+    total_env["displayln"] = std::make_shared<BuiltinProcValue>(&displayln);
+    total_env["error"] = std::make_shared<BuiltinProcValue>(&error);
+    total_env["eval"] = std::make_shared<BuiltinProcValue>(&eeval);
+    total_env["exit"] = std::make_shared<BuiltinProcValue>(&eexit);
+    total_env["newline"] = std::make_shared<BuiltinProcValue>(&newline);
 }
 
 ValuePtr add(const std::vector<ValuePtr>& params, EvalEnv& Env) {
@@ -73,6 +80,10 @@ ValuePtr print(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     return std::make_shared<NilValue>();
 }
 ValuePtr sub(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() == 1) {
+        auto flag = dynamic_cast<NumericValue&>(*params[0]);
+        return std::make_shared<NumericValue>(-flag.asNumber());
+    }
     double result = 0.000000;
     result += 2 * dynamic_cast<NumericValue&>(*params[0]).asNumber();
     for (const auto& i : params) {
@@ -289,10 +300,17 @@ ValuePtr isList(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     if (params.size() != 1) {
         throw LispError("isList function only takes one parameter.");
     }
+
     bool result = false;
-    if (params[0]->isList() || params[0]->isNil()) {
-        result = true;
+    ValuePtr temp = params[0];
+    while (!temp->isNil()) {
+        if (!temp->isList()) {
+            return std::make_shared<BooleanValue>(result);
+        }
+        auto flag = dynamic_cast<PairValue&>(*temp);
+        temp = flag.cdrValue();
     }
+    result = true;
     return std::make_shared<BooleanValue>(result);
 }
 ValuePtr isNumber(const std::vector<ValuePtr>& params, EvalEnv& Env) {
@@ -375,6 +393,9 @@ ValuePtr cons(const std::vector<ValuePtr>& params, EvalEnv& Env) {
 ValuePtr listLength(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     if (params.size() != 1) {
         throw LispError("length function only takes one parameter.");
+    }
+    if (params[0]->isNil()) {
+        return std::make_shared<NumericValue>(0);
     }
     if (!params[0]->isList()) {
         throw LispError("Cannot calculate a non-list value.");
@@ -559,7 +580,12 @@ ValuePtr nnot(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     if (params.size() != 1) {
         throw LispError("not function only takes one parameter.");
     }
-    if (Env.eval(params[0])->toString() == "#f") {
+    if (typeid(*params[0]) == typeid(BooleanValue)) {
+        if (dynamic_cast<BooleanValue&>(*params[0]).toString().c_str() ==
+                "#t" ||
+            dynamic_cast<BooleanValue&>(*params[0]).toString() == "#t") {
+            return std::make_shared<BooleanValue>(false);
+        }
         return std::make_shared<BooleanValue>(true);
     }
     return std::make_shared<BooleanValue>(false);
@@ -589,4 +615,57 @@ ValuePtr lesseq(const std::vector<ValuePtr>& params, EvalEnv& Env) {
         return std::make_shared<BooleanValue>(true);
     }
     return std::make_shared<BooleanValue>(false);
+}
+ValuePtr apply(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() != 2) {
+        throw LispError("apply function only takes two parameters.");
+    }
+    return Env.apply(params[0], params[1]->toVector());
+}
+ValuePtr display(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() != 1) {
+        throw LispError("display function only takes one parameter.");
+    }
+    std::cout << Env.eval(params[0])->toString();
+    return std::make_shared<NilValue>();
+}
+ValuePtr displayln(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() != 1) {
+        throw LispError("displayln function only takes one parameter.");
+    }
+    std::cout << Env.eval(params[0])->toString() << std::endl;
+    return std::make_shared<NilValue>();
+}
+ValuePtr error(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() == 0) {
+        throw LispError("error function only takes one parameter.");
+    }
+    if (params.size() == 1) {
+        throw LispError(params[0]->toString());
+    }
+    return std::make_shared<NilValue>();
+}
+ValuePtr eeval(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() != 1) {
+        throw LispError("eval function only takes one parameter.");
+    }
+    ValuePtr result = params[0];
+    return Env.eval(result);
+}
+ValuePtr eexit(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() == 0) {
+        exit(0);
+    }
+    if (params.size() != 1) {
+        throw LispError("exit function only takes one parameter.");
+    }
+    exit(params[0]->asNumber());
+    return std::make_shared<NilValue>();
+}
+ValuePtr newline(const std::vector<ValuePtr>& params, EvalEnv& Env) {
+    if (params.size() != 0) {
+        throw LispError("newline function only takes zero parameter.");
+    }
+    std::cout << std::endl;
+    return std::make_shared<NilValue>();
 }

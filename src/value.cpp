@@ -237,9 +237,9 @@ ValuePtr LambdaValue::apply(const std::vector<ValuePtr>&
     return result;*/
 
     std::vector<ValuePtr> result{};
-    std::cout << "body size is: " << body.size() << std::endl;
+    // std::cout << "body size is: " << body.size() << std::endl;
     for (auto i : body) {
-        std::cout << i->toString() << std::endl;
+        // std::cout << i->toString() << std::endl;
         result.push_back(child->eval(i));
     }
     return result.back();
