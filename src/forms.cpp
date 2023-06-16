@@ -101,9 +101,9 @@ ValuePtr orForm(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     }
 }
 ValuePtr lambdaForm(const std::vector<ValuePtr>& params, EvalEnv& Env) {
-    if (params.size() != 2) {
+    /*if (params.size() != 2) {
         throw LispError("Wrong number of arguments");
-    }
+    }*/
     if (params[0]->isList() == false) {
         throw LispError("Unimplemented");
     }
@@ -155,6 +155,10 @@ ValuePtr condForm(const std::vector<ValuePtr>& params, EvalEnv& Env) {
             } else {
                 result = Env.eval(temp[1]);
             }
+            return std::move(result);
+        }
+        if (temp.size() == 1) {
+            result = Env.eval(temp[0]);
             return std::move(result);
         }
     }

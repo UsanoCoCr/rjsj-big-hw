@@ -1,6 +1,7 @@
 #include "./builtins.h"
 
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -42,8 +43,8 @@ void add_builtins() {
     total_env["length"] = std::make_shared<BuiltinProcValue>(&listLength);
     total_env["list"] = std::make_shared<BuiltinProcValue>(&list);
     total_env["map"] = std::make_shared<BuiltinProcValue>(&map);
-    // total_env["filter"] = std::make_shared<BuiltinProcValue>(&filter);
-    //  total_env["reduce"] = std::make_shared<BuiltinProcValue>(&reduce);
+    total_env["filter"] = std::make_shared<BuiltinProcValue>(&filter);
+    total_env["reduce"] = std::make_shared<BuiltinProcValue>(&reduce);
     total_env["expt"] = std::make_shared<BuiltinProcValue>(&expt);
     total_env["quotient"] = std::make_shared<BuiltinProcValue>(&quotient);
     total_env["modulo"] = std::make_shared<BuiltinProcValue>(&modulo);
@@ -431,20 +432,17 @@ ValuePtr filter(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     if (params.size() != 2) {
         throw LispError("filter function only takes two parameters.");
     }
-    /*if (params[0]->toString() != "#<procedure>") {
-        throw LispError("Cannot calculate a non-procedure value.");
-    }*/
     if (!params[1]->isList()) {
         throw LispError("Cannot calculate a non-list value.");
     }
+    auto param = params[0];
     std::vector<ValuePtr> flag = params[1]->toVector();
-    auto proc = params[0];
     std::vector<ValuePtr> result;
     for (auto i : flag) {
-        if (Env.apply(proc, i->toVector())->isBoolean() == false) {
-            throw LispError("The procedure should return a boolean value.");
-        }
-        if (Env.apply(proc, i->toVector())->toString() == "#t") {
+        std::vector<ValuePtr> temp;
+        temp.push_back(i);
+        if (std::strcmp(Env.apply(param, temp)->toString().c_str(), "#t") ==
+            0) {
             result.push_back(i);
         }
     }
@@ -454,21 +452,19 @@ ValuePtr reduce(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     if (params.size() != 2) {
         throw LispError("reduce function only takes two parameters.");
     }
-    auto proc = params[0];
-    /*if (proc->toString() != "#<procedure>") {
-        throw LispError("Cannot calculate a non-procedure value.");
-    }*/
     if (!params[1]->isList()) {
         throw LispError("Cannot calculate a non-list value.");
     }
-    PairValue* list = dynamic_cast<PairValue*>(params[1].get());
-    if (list->toVector().size() == 1) {
-        return list->toVector()[0];
+    auto param = params[0];
+    auto car = dynamic_cast<PairValue&>(*params[1]).carValue();
+    auto cdr = dynamic_cast<PairValue&>(*params[1]).cdrValue();
+    while (cdr->isList()) {
+        auto cadr = dynamic_cast<PairValue&>(*cdr).carValue();
+        auto cddr = dynamic_cast<PairValue&>(*cdr).cdrValue();
+        car = Env.apply(param, {car, cadr});
+        cdr = cddr;
     }
-    return std::make_shared<PairValue>(
-        Env.apply(proc, list->carValue()->toVector()),
-        Env.apply(std::make_shared<SymbolValue>("reduce"),
-                  std::vector<ValuePtr>{proc, list->cdrValue()}));
+    return car;
 }
 ValuePtr expt(const std::vector<ValuePtr>& params, EvalEnv& Env) {
     if (params.size() != 2) {

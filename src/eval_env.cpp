@@ -109,7 +109,7 @@ ValuePtr EvalEnv::lookupBinding(std::string name) {
 void EvalEnv::defineBinding(const std::vector<std::string>& names,
                             const std::vector<ValuePtr>& values) {
     if (names.size() != values.size()) {
-        throw LispError("Wrong number of arguments");
+        throw LispError("EvalEnv::defineBinding Wrong number of arguments");
     }
     for (int i = 0; i < names.size(); i++) {
         env[names[i]] = values[i];
@@ -127,7 +127,7 @@ std::shared_ptr<EvalEnv> EvalEnv::createChild(
     std::shared_ptr<EvalEnv> child = EvalEnv::createGlobal();
     child->parent = this->shared_from_this();
     if (params.size() != args.size()) {
-        throw LispError("Wrong number of arguments");
+        throw LispError("EvalEnv::createChild Wrong number of arguments");
     }
     for (int i = 0; i < params.size(); i++) {
         child->env[params[i]] = args[i];
